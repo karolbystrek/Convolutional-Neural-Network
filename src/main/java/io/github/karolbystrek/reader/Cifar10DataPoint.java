@@ -19,7 +19,7 @@ public class Cifar10DataPoint implements DataPoint {
         }
 
         Tensor tensor = new Tensor(1, 1, NUM_LABELS);
-        tensor.setValue(0, 0, label, 1.0);
+        tensor.setValue(0, 0, label, 1.0f);
         return tensor;
     }
 

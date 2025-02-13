@@ -8,5 +8,5 @@ public interface Layer {
 
     Tensor backward(Tensor gradientOutput);
 
-    void updateParameters(double learningRate);
+    void updateParameters(float learningRate);
 }

@@ -8,19 +8,19 @@ public class HiddenLayer implements Layer {
     private final int numNodesOut;
 
     private Tensor lastInput;
-    private final double[] lastWeightedInput;
+    private final float[] lastWeightedInput;
 
-    private double[][] weightsGradient;
-    private double[] biasesGradient;
+    private float[][] weightsGradient;
+    private float[] biasesGradient;
 
-    private double[][] weights;
-    private double[] biases;
+    private float[][] weights;
+    private float[] biases;
 
     public HiddenLayer(int numNodesIn, int numNodesOut) {
         this.numNodesIn = numNodesIn;
         this.numNodesOut = numNodesOut;
 
-        this.lastWeightedInput = new double[numNodesOut];
+        this.lastWeightedInput = new float[numNodesOut];
 
         initializeWeights();
         initializeBiases();
@@ -49,17 +49,17 @@ public class HiddenLayer implements Layer {
 
     @Override
     public Tensor backward(Tensor gradOutput) {
-        double[][][] gradOutData = gradOutput.getData();
-        double[] delta = new double[numNodesOut];
-        double[] gradInputFlat = new double[numNodesIn];
+        float[][][] gradOutData = gradOutput.getData();
+        float[] delta = new float[numNodesOut];
+        float[] gradInputFlat = new float[numNodesIn];
 
         for (int nodeOut = 0; nodeOut < numNodesOut; nodeOut++) {
-            double dActivation = (lastWeightedInput[nodeOut] > 0) ? 1.0 : 0.0;
+            float dActivation = (lastWeightedInput[nodeOut] > 0) ? 1.0f : 0.0f;
             delta[nodeOut] = gradOutData[0][0][nodeOut] * dActivation;
             biasesGradient[nodeOut] += delta[nodeOut];
 
             for (int nodeIn = 0; nodeIn < numNodesIn; nodeIn++) {
-                double inputValue = lastInput.getValue(0, 0, nodeIn);
+                float inputValue = lastInput.getValue(0, 0, nodeIn);
                 weightsGradient[nodeOut][nodeIn] += delta[nodeOut] * inputValue;
 
                 gradInputFlat[nodeIn] += weights[nodeOut][nodeIn] * delta[nodeOut];
@@ -75,44 +75,44 @@ public class HiddenLayer implements Layer {
     }
 
     @Override
-    public void updateParameters(double learningRate) {
+    public void updateParameters(float learningRate) {
         for (int nodeOut = 0; nodeOut < numNodesOut; nodeOut++) {
             biases[nodeOut] -= learningRate * biasesGradient[nodeOut];
-            biasesGradient[nodeOut] = 0.0;
+            biasesGradient[nodeOut] = 0.0f;
 
             for (int nodeIn = 0; nodeIn < numNodesIn; nodeIn++) {
                 weights[nodeOut][nodeIn] -= learningRate * weightsGradient[nodeOut][nodeIn];
-                weightsGradient[nodeOut][nodeIn] = 0.0;
+                weightsGradient[nodeOut][nodeIn] = 0.0f;
             }
         }
 
     }
 
     private void initializeWeights() {
-        weights = new double[numNodesOut][numNodesIn];
-        weightsGradient = new double[numNodesOut][numNodesIn];
+        weights = new float[numNodesOut][numNodesIn];
+        weightsGradient = new float[numNodesOut][numNodesIn];
 
-        double scale = Math.sqrt(2.0 / numNodesIn);
+        float scale = (float) Math.sqrt(2.0f / numNodesIn);
 
         for (int nodeOut = 0; nodeOut < numNodesOut; nodeOut++) {
             for (int nodeIn = 0; nodeIn < numNodesIn; nodeIn++) {
-                weights[nodeOut][nodeIn] = (Math.random() * 2 - 1) * scale;
-                weightsGradient[nodeOut][nodeIn] = 0.0;
+                weights[nodeOut][nodeIn] = (float) ((Math.random() * 2 - 1) * scale);
+                weightsGradient[nodeOut][nodeIn] = 0.0f;
             }
         }
     }
 
     private void initializeBiases() {
-        biases = new double[numNodesOut];
-        biasesGradient = new double[numNodesOut];
+        biases = new float[numNodesOut];
+        biasesGradient = new float[numNodesOut];
 
         for (int nodeOut = 0; nodeOut < numNodesOut; nodeOut++) {
-            biases[nodeOut] = 0.0;
-            biasesGradient[nodeOut] = 0.0;
+            biases[nodeOut] = 0.0f;
+            biasesGradient[nodeOut] = 0.0f;
         }
     }
 
-    private double activation(double weightedInput) {
-        return Math.max(0.0, weightedInput);
+    private float activation(float weightedInput) {
+        return Math.max(0.0f, weightedInput);
     }
 }

@@ -32,7 +32,7 @@ public class PoolingLayer implements Layer{
         IntStream.range(0, depth).parallel().forEach(d -> {
             for (int outY = 0; outY < outputHeight; outY++) {
                 for (int outX = 0; outX < outputWidth; outX++) {
-                    double maxVal = Double.NEGATIVE_INFINITY;
+                    float maxVal = Float.NEGATIVE_INFINITY;
 
                     for (int pY = 0; pY < poolSize; pY++) {
                         for (int pX = 0; pX < poolSize; pX++) {
@@ -40,7 +40,7 @@ public class PoolingLayer implements Layer{
                             int inX = outX * stride + pX;
 
                             if (inY < inputHeight && inX < inputWidth) {
-                                double value = input.getValue(d, inY, inX);
+                                float value = input.getValue(d, inY, inX);
                                 if (value > maxVal) {
                                     maxVal = value;
                                 }
@@ -67,10 +67,10 @@ public class PoolingLayer implements Layer{
 
         Tensor gradInput = new Tensor(depth, inputHeight, inputWidth);
 
-        for (int d = 0; d < depth; d++) {
+        IntStream.range(0, depth).parallel().forEach(d -> {
             for (int outY = 0; outY < outputHeight; outY++) {
                 for (int outX = 0; outX < outputWidth; outX++) {
-                    double maxValue = Double.NEGATIVE_INFINITY;
+                    float maxValue = Float.NEGATIVE_INFINITY;
                     int maxInY = -1, maxInX = -1;
 
                     for (int pY = 0; pY < poolSize; pY++) {
@@ -79,7 +79,7 @@ public class PoolingLayer implements Layer{
                             int inX = outX * stride + pX;
 
                             if (inY < inputHeight && inX < inputWidth) {
-                                double value = lastInput.getValue(d, inY, inX);
+                                float value = lastInput.getValue(d, inY, inX);
                                 if (value > maxValue) {
                                     maxValue = value;
                                     maxInY = inY;
@@ -89,16 +89,16 @@ public class PoolingLayer implements Layer{
                         }
                     }
 
-                    double grad = gradOutput.getValue(d, outY, outX);
-                    double currentGrad = gradInput.getValue(d, maxInY, maxInX);
+                    float grad = gradOutput.getValue(d, outY, outX);
+                    float currentGrad = gradInput.getValue(d, maxInY, maxInX);
                     gradInput.setValue(d, maxInY, maxInX, currentGrad + grad);
                 }
             }
-        }
+        });
 
         return gradInput;
     }
 
     @Override
-    public void updateParameters(double learningRate) {}
+    public void updateParameters(float learningRate) {}
 }

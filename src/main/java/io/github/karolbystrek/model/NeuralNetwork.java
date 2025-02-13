@@ -33,14 +33,14 @@ public class NeuralNetwork {
         }
     }
 
-    public void updateParameters(double learningRate) {
+    public void updateParameters(float learningRate) {
         for (Layer layer : layers) {
             layer.updateParameters(learningRate);
         }
     }
 
-    public double train(List<? extends DataPoint> trainingData, int batchSize, double learningRate) {
-        double totalCost = 0.0;
+    public float train(List<? extends DataPoint> trainingData, int batchSize, float learningRate) {
+        float totalCost = 0.0f;
         int batchIndex = 0;
 
         for (DataPoint dataPoint : trainingData) {
@@ -66,7 +66,7 @@ public class NeuralNetwork {
         return totalCost / trainingData.size();
     }
 
-    public void fit(List<? extends DataPoint> trainingData, int maxEpochs, int batchSize, double learningRate) {
+    public void fit(List<? extends DataPoint> trainingData, int maxEpochs, int batchSize, float learningRate) {
         System.out.println("Beginning training...");
 
         for (int epoch = 0; epoch < maxEpochs; epoch++) {
@@ -74,7 +74,7 @@ public class NeuralNetwork {
             System.out.print("Epoch: " + (epoch + 1) + ", ");
 
             Collections.shuffle(trainingData);
-            double averageCost = train(trainingData, batchSize, learningRate);
+            float averageCost = train(trainingData, batchSize, learningRate);
             System.out.print("Average cost: " + averageCost + ", ");
 
             long endTime = System.nanoTime();
@@ -82,13 +82,13 @@ public class NeuralNetwork {
         }
     }
 
-    private double cost(Tensor output, Tensor expectedOutput) {
-        double cost = 0.0;
-        double EPSILON = 1.0e-15;
+    private float cost(Tensor output, Tensor expectedOutput) {
+        float cost = 0.0f;
+        float EPSILON = 1.0e-13f;
 
         for (int w = 0; w < output.getWidth(); w++) {
-            double value = output.getValue(0, 0, w);
-            double expectedValue = expectedOutput.getValue(0, 0, w);
+            float value = output.getValue(0, 0, w);
+            float expectedValue = expectedOutput.getValue(0, 0, w);
 
             cost -= expectedValue * Math.log(value + EPSILON);
         }
@@ -100,8 +100,8 @@ public class NeuralNetwork {
         Tensor gradOutput = new Tensor(1, 1, output.getWidth());
 
         for (int w = 0; w < output.getWidth(); w++) {
-            double value = output.getValue(0, 0, w);
-            double expectedValue = expectedOutput.getValue(0, 0, w);
+            float value = output.getValue(0, 0, w);
+            float expectedValue = expectedOutput.getValue(0, 0, w);
             gradOutput.setValue(0, 0, w, value - expectedValue);
         }
 

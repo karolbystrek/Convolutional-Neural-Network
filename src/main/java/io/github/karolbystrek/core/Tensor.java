@@ -2,7 +2,7 @@ package io.github.karolbystrek.core;
 
 public class Tensor {
 
-    private final double[][][] data;
+    private final float[][][] data;
     private final int depth;
     private final int height;
     private final int width;
@@ -11,10 +11,10 @@ public class Tensor {
         this.depth = depth;
         this.height = height;
         this.width = width;
-        this.data = new double[depth][height][width];
+        this.data = new float[depth][height][width];
     }
 
-    public Tensor(double[][][] data) {
+    public Tensor(float[][][] data) {
         this.depth = data.length;
         this.height = data[0].length;
         this.width = data[0][0].length;
@@ -33,15 +33,15 @@ public class Tensor {
         return width;
     }
 
-    public double[][][] getData() {
+    public float[][][] getData() {
         return data;
     }
 
-    public double getValue(int d, int h, int w) {
+    public float getValue(int d, int h, int w) {
         return data[d][h][w];
     }
 
-    public void setValue(int d, int h, int w, double value) {
+    public void setValue(int d, int h, int w, float value) {
         data[d][h][w] = value;
     }
 }
