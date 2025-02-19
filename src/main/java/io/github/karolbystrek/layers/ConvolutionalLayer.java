@@ -37,6 +37,7 @@ public class ConvolutionalLayer implements Layer {
         int inputHeight = input.getHeight();
         int inputWidth = input.getWidth();
         int numKernels = kernels.length;
+        float[][][] inputData = input.getData();
 
         int kernelHeight = kernels[0].getWeights()[0].length;
         int kernelWidth = kernels[0].getWeights()[0][0].length;
@@ -45,7 +46,10 @@ public class ConvolutionalLayer implements Layer {
         int outputWidth = (inputWidth + 2 * padding - kernelWidth) / stride + 1;
 
         lastWeightedInput = new Tensor(numKernels, outputHeight, outputWidth);
+        float[][][] lastWeightedInputData = lastWeightedInput.getData();
+
         Tensor output = new Tensor(numKernels, outputHeight, outputWidth);
+        float[][][] outputData = output.getData();
 
         IntStream.range(0, numKernels).parallel().forEach( k -> {
             Kernel kernel = kernels[k];
@@ -61,16 +65,16 @@ public class ConvolutionalLayer implements Layer {
                                 int inY = outY * stride - padding + kY;
                                 int inX = outX * stride - padding + kX;
                                 if (inY >= 0 && inY < inputHeight && inX >= 0 && inX < inputWidth) {
-                                    sum += input.getValue(d, inY, inX) * kernelWeights[d][kY][kX];
+                                    sum += inputData[d][inY][inX] * kernelWeights[d][kY][kX];
                                 }
 
                             }
                         }
                     }
                     sum += bias;
-                    lastWeightedInput.setValue(k, outY, outX, sum);
+                    lastWeightedInputData[k][outY][outX] = sum;
                     float activated = activation(sum);
-                    output.setValue(k, outY, outX, activated);
+                    outputData[k][outY][outX] = activated;
                 }
             }
         });
@@ -83,6 +87,7 @@ public class ConvolutionalLayer implements Layer {
         int inputDepth = lastInput.getDepth();
         int inputHeight = lastInput.getHeight();
         int inputWidth = lastInput.getWidth();
+        float[][][] gradInputData = gradOutput.getData();
 
         int numKernels = kernels.length;
         int kernelHeight = kernels[0].getWeights()[0].length;
@@ -119,8 +124,7 @@ public class ConvolutionalLayer implements Layer {
 
                                     kernel.weightsGradient[d][kY][kX] += inputValue * delta;
 
-                                    float previousGrad = gradInput.getValue(d, inY, inX);
-                                    gradInput.setValue(d, inY, inX, previousGrad + kernelWeights[d][kY][kX] * delta);
+                                    gradInputData[d][inY][inX] += kernelWeights[d][kY][kX] * delta;
                                 }
                             }
                         }

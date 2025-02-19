@@ -86,25 +86,31 @@ public class NeuralNetwork {
         float cost = 0.0f;
         float EPSILON = 1.0e-13f;
 
-        for (int w = 0; w < output.getWidth(); w++) {
-            float value = output.getValue(0, 0, w);
-            float expectedValue = expectedOutput.getValue(0, 0, w);
+        float[][][] outputData = output.getData();
+        float[][][] expectedOutputData = expectedOutput.getData();
 
-            cost -= expectedValue * Math.log(value + EPSILON);
+        for (int w = 0; w < output.getWidth(); w++) {
+            float value = outputData[0][0][w];
+            float expectedValue = expectedOutputData[0][0][w];
+
+            cost -= (float) (expectedValue * Math.log(value + EPSILON));
         }
 
         return cost;
     }
 
     private Tensor calculateOutputGradient(Tensor output, Tensor expectedOutput) {
-        Tensor gradOutput = new Tensor(1, 1, output.getWidth());
+        float[][][] outputData = output.getData();
+        float[][][] expectedOutputData = expectedOutput.getData();
+
+        float[][][] gradOutputData = new float[1][1][output.getWidth()];
 
         for (int w = 0; w < output.getWidth(); w++) {
-            float value = output.getValue(0, 0, w);
-            float expectedValue = expectedOutput.getValue(0, 0, w);
-            gradOutput.setValue(0, 0, w, value - expectedValue);
+            float value = outputData[0][0][w];
+            float expectedValue = expectedOutputData[0][0][w];
+            gradOutputData[0][0][w] = value - expectedValue;
         }
 
-        return gradOutput;
+        return new Tensor(gradOutputData);
     }
 }

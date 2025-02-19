@@ -36,12 +36,4 @@ public class Tensor {
     public float[][][] getData() {
         return data;
     }
-
-    public float getValue(int d, int h, int w) {
-        return data[d][h][w];
-    }
-
-    public void setValue(int d, int h, int w, float value) {
-        data[d][h][w] = value;
-    }
 }
