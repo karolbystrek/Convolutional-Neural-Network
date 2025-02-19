@@ -30,12 +30,12 @@ public class MnistDataReader {
             List<MnistDataPoint> data = new ArrayList<>(numDataPoints);
 
             for (int i = 0; i < numDataPoints; i++) {
-                double[][][] imageData = new double[1][numRows][numCols];
+                float[][][] imageData = new float[1][numRows][numCols];
 
                 for (int row = 0; row < numRows; row++) {
                     for (int col = 0; col < numCols; col++) {
                         int pixelValue = dataInputStream.readUnsignedByte();
-                        imageData[0][row][col] = pixelValue / 255.0;
+                        imageData[0][row][col] = pixelValue / 255.0f;
                     }
                 }
 

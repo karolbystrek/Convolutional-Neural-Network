@@ -17,7 +17,7 @@ import java.util.List;
 public class MnistApp {
     private static final int MAX_EPOCHS = 30;
     private static final int BATCH_SIZE = 64;
-    private static final double LEARNING_RATE = 0.001;
+    private static final float LEARNING_RATE = 0.001f;
 
     public static void main(String[] args) {
         try {
@@ -64,7 +64,7 @@ public class MnistApp {
 
         for (DataPoint dataPoint : testData) {
             Tensor outputTensor = model.predict(dataPoint);
-            double[] output = outputTensor.getData()[0][0];
+            float[] output = outputTensor.getData()[0][0];
 
             int predicted = 0;
             for (int i = 1; i < output.length; i++) {
@@ -74,7 +74,7 @@ public class MnistApp {
             }
 
             Tensor expectedOutputTensor = dataPoint.getExpectedOutput();
-            double[] expectedOutput = expectedOutputTensor.getData()[0][0];
+            float[] expectedOutput = expectedOutputTensor.getData()[0][0];
             int expected = 0;
             for (int i = 1; i < expectedOutput.length; i++) {
                 if (expectedOutput[i] > expectedOutput[expected]) {
@@ -87,7 +87,7 @@ public class MnistApp {
             }
         }
 
-        double accuracy = 100.0 * correct / testData.size();
+        float accuracy = 100.0f * correct / testData.size();
         System.out.println("Test accuracy: " + accuracy + "%");
     }
 }

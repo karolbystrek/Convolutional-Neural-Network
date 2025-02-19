@@ -14,8 +14,8 @@ public class FlattenLayer implements Layer {
         this.originalHeight = input.getHeight();
         this.originalWidth = input.getWidth();
 
-        double[][][] data = input.getData();
-        double[][][] flatData = new double[1][1][originalDepth * originalHeight * originalWidth];
+        float[][][] data = input.getData();
+        float[][][] flatData = new float[1][1][originalDepth * originalHeight * originalWidth];
 
         int index = 0;
         for (int d = 0; d < originalDepth; d++) {
@@ -30,8 +30,8 @@ public class FlattenLayer implements Layer {
 
     @Override
     public Tensor backward(Tensor gradOutput) {
-        double[][][] gradData = gradOutput.getData();
-        double[][][] unflatData = new double[originalDepth][originalHeight][originalWidth];
+        float[][][] gradData = gradOutput.getData();
+        float[][][] unflatData = new float[originalDepth][originalHeight][originalWidth];
 
         int index = 0;
         for (int d = 0; d < originalDepth; d++) {
@@ -45,6 +45,6 @@ public class FlattenLayer implements Layer {
     }
 
     @Override
-    public void updateParameters(double learningRate) {}
+    public void updateParameters(float learningRate) {}
 
 }

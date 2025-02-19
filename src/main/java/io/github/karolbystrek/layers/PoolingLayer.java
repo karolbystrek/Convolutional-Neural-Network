@@ -19,6 +19,7 @@ public class PoolingLayer implements Layer{
     @Override
     public Tensor forward(Tensor input) {
         this.lastInput = input;
+        float[][][] inputData = input.getData();
 
         int depth = input.getDepth();
         int inputHeight = input.getHeight();
@@ -27,12 +28,12 @@ public class PoolingLayer implements Layer{
         int outputHeight = (inputHeight - poolSize) / stride + 1;
         int outputWidth = (inputWidth - poolSize) / stride + 1;
 
-        Tensor output = new Tensor(depth, outputHeight, outputWidth);
+        float[][][] outputData = new float[depth][outputHeight][outputWidth];
 
         IntStream.range(0, depth).parallel().forEach(d -> {
             for (int outY = 0; outY < outputHeight; outY++) {
                 for (int outX = 0; outX < outputWidth; outX++) {
-                    double maxVal = Double.NEGATIVE_INFINITY;
+                    float maxVal = Float.NEGATIVE_INFINITY;
 
                     for (int pY = 0; pY < poolSize; pY++) {
                         for (int pX = 0; pX < poolSize; pX++) {
@@ -40,7 +41,7 @@ public class PoolingLayer implements Layer{
                             int inX = outX * stride + pX;
 
                             if (inY < inputHeight && inX < inputWidth) {
-                                double value = input.getValue(d, inY, inX);
+                                float value = inputData[d][inY][inX];
                                 if (value > maxVal) {
                                     maxVal = value;
                                 }
@@ -48,12 +49,12 @@ public class PoolingLayer implements Layer{
                         }
                     }
 
-                    output.setValue(d, outY, outX, maxVal);
+                    outputData[d][outY][outX] = maxVal;
                 }
             }
         });
 
-        return output;
+        return new Tensor(outputData);
     }
 
     @Override
@@ -65,12 +66,15 @@ public class PoolingLayer implements Layer{
         int outputHeight = gradOutput.getHeight();
         int outputWidth = gradOutput.getWidth();
 
-        Tensor gradInput = new Tensor(depth, inputHeight, inputWidth);
+        float[][][] gradOutputData = gradOutput.getData();
+        float[][][] lastInputData = lastInput.getData();
 
-        for (int d = 0; d < depth; d++) {
+        float[][][] gradInputData = new float[depth][inputHeight][inputWidth];
+
+        IntStream.range(0, depth).parallel().forEach(d -> {
             for (int outY = 0; outY < outputHeight; outY++) {
                 for (int outX = 0; outX < outputWidth; outX++) {
-                    double maxValue = Double.NEGATIVE_INFINITY;
+                    float maxValue = Float.NEGATIVE_INFINITY;
                     int maxInY = -1, maxInX = -1;
 
                     for (int pY = 0; pY < poolSize; pY++) {
@@ -79,7 +83,7 @@ public class PoolingLayer implements Layer{
                             int inX = outX * stride + pX;
 
                             if (inY < inputHeight && inX < inputWidth) {
-                                double value = lastInput.getValue(d, inY, inX);
+                                float value = lastInputData[d][inY][inX];
                                 if (value > maxValue) {
                                     maxValue = value;
                                     maxInY = inY;
@@ -89,16 +93,14 @@ public class PoolingLayer implements Layer{
                         }
                     }
 
-                    double grad = gradOutput.getValue(d, outY, outX);
-                    double currentGrad = gradInput.getValue(d, maxInY, maxInX);
-                    gradInput.setValue(d, maxInY, maxInX, currentGrad + grad);
+                    gradInputData[d][maxInY][maxInX] += gradOutputData[d][outY][outX];
                 }
             }
-        }
+        });
 
-        return gradInput;
+        return new Tensor(gradInputData);
     }
 
     @Override
-    public void updateParameters(double learningRate) {}
+    public void updateParameters(float learningRate) {}
 }

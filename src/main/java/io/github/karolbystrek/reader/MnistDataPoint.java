@@ -19,9 +19,10 @@ public class MnistDataPoint implements DataPoint {
             throw new IllegalArgumentException("Invalid label: " + label);
         }
 
-        Tensor tensor = new Tensor(1, 1, NUM_LABELS);
-        tensor.setValue(0, 0, label, 1.0);
-        return tensor;
+        float[][][] tensorData = new float[1][1][NUM_LABELS];
+        tensorData[0][0][label] = 1.0f;
+
+        return new Tensor(tensorData);
     }
 
     @Override

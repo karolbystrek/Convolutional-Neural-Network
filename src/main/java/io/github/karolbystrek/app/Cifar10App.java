@@ -1,6 +1,5 @@
 package io.github.karolbystrek.app;
 
-import io.github.karolbystrek.core.Kernel;
 import io.github.karolbystrek.core.Tensor;
 import io.github.karolbystrek.layers.ConvolutionalLayer;
 import io.github.karolbystrek.layers.FlattenLayer;
@@ -25,9 +24,9 @@ public class Cifar10App {
     };
     private static final String testFile = "data/cifar-10/test_batch.bin";
 
-    private static final int MAX_EPOCHS = 10;
-    private static final int BATCH_SIZE = 64;
-    private static final double LEARNING_RATE = 0.001;
+    private static final int MAX_EPOCHS = 30;
+    private static final int BATCH_SIZE = 32;
+    private static final float LEARNING_RATE = 0.001f;
 
     public static void main(String[] args) {
         try {
@@ -61,7 +60,7 @@ public class Cifar10App {
 
         for (DataPoint dataPoint : testData) {
             Tensor outputTensor = model.predict(dataPoint);
-            double[] output = outputTensor.getData()[0][0];
+            float[] output = outputTensor.getData()[0][0];
 
             int predicted = 0;
             for (int i = 1; i < output.length; i++) {
@@ -71,7 +70,7 @@ public class Cifar10App {
             }
 
             Tensor expectedOutputTensor = dataPoint.getExpectedOutput();
-            double[] expectedOutput = expectedOutputTensor.getData()[0][0];
+            float[] expectedOutput = expectedOutputTensor.getData()[0][0];
             int expected = 0;
             for (int i = 1; i < expectedOutput.length; i++) {
                 if (expectedOutput[i] > expectedOutput[expected]) {
@@ -84,7 +83,7 @@ public class Cifar10App {
             }
         }
 
-        double accuracy = 100.0 * correct / testData.size();
+        float accuracy = 100.0f * correct / testData.size();
         System.out.println("Test accuracy: " + accuracy + "%");
     }
 

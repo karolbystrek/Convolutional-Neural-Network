@@ -39,7 +39,7 @@ public class FullyConnectedLayer implements Layer {
     }
 
     @Override
-    public void updateParameters(double learningRate) {
+    public void updateParameters(float learningRate) {
         for (Layer layer : layers) {
             layer.updateParameters(learningRate);
         }

@@ -34,12 +34,12 @@ public class Cifar10DataReader {
             for (int i = 0; i < NUM_DATA_POINTS; i++) {
                 int label = dataInputStream.readUnsignedByte();
 
-                double[][][] imageData = new double[NUM_CHANNELS][IMAGE_HEIGHT][IMAGE_WIDTH];
+                float[][][] imageData = new float[NUM_CHANNELS][IMAGE_HEIGHT][IMAGE_WIDTH];
                 for (int c = 0 ; c < NUM_CHANNELS ; c++) {
                     for (int h = 0 ; h < IMAGE_HEIGHT ; h++) {
                         for (int w = 0 ; w < IMAGE_WIDTH ; w++) {
                             int pixelValue = dataInputStream.readUnsignedByte();
-                            imageData[c][h][w] = pixelValue / 255.0;
+                            imageData[c][h][w] = pixelValue / 255.0f;
                         }
                     }
                 }
