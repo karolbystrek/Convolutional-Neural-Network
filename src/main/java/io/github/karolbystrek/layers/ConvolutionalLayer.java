@@ -36,14 +36,15 @@ public class ConvolutionalLayer implements Layer {
         int inputDepth = input.getDepth();
         int inputHeight = input.getHeight();
         int inputWidth = input.getWidth();
-        int numKernels = kernels.length;
-        float[][][] inputData = input.getData();
+        float[][][] paddedInputData = padInputData(input.getData(), padding);
 
+        int numKernels = kernels.length;
         int kernelHeight = kernels[0].getWeights()[0].length;
         int kernelWidth = kernels[0].getWeights()[0][0].length;
 
         int outputHeight = (inputHeight + 2 * padding - kernelHeight) / stride + 1;
         int outputWidth = (inputWidth + 2 * padding - kernelWidth) / stride + 1;
+
 
         lastWeightedInput = new Tensor(numKernels, outputHeight, outputWidth);
         float[][][] lastWeightedInputData = lastWeightedInput.getData();
@@ -62,12 +63,9 @@ public class ConvolutionalLayer implements Layer {
                     for (int d = 0; d < inputDepth; d++) {
                         for (int kY = 0; kY < kernelHeight; kY++) {
                             for (int kX = 0; kX < kernelWidth; kX++) {
-                                int inY = outY * stride - padding + kY;
-                                int inX = outX * stride - padding + kX;
-                                if (inY >= 0 && inY < inputHeight && inX >= 0 && inX < inputWidth) {
-                                    sum += inputData[d][inY][inX] * kernelWeights[d][kY][kX];
-                                }
-
+                                int inY = outY * stride + kY;
+                                int inX = outX * stride + kX;
+                                sum += paddedInputData[d][inY][inX] * kernelWeights[d][kY][kX];
                             }
                         }
                     }
@@ -145,5 +143,21 @@ public class ConvolutionalLayer implements Layer {
 
     private float activation(float input) {
         return Math.max(0.0f, input);
+    }
+
+    private float[][][] padInputData(float[][][] inputData, int padding) {
+        int depth = inputData.length;
+        int inputHeight = inputData[0].length;
+        int inputWidth = inputData[0][0].length;
+        int paddedHeight = inputHeight + 2 * padding;
+        int paddedWidth = inputWidth + 2 * padding;
+        float[][][] paddedData = new float[depth][paddedHeight][paddedWidth];
+
+        for (int d = 0; d < depth; d++) {
+            for (int y = 0; y < inputHeight; y++) {
+                System.arraycopy(inputData[d][y], 0, paddedData[d][y + padding], padding, inputWidth);
+            }
+        }
+        return paddedData;
     }
 }
