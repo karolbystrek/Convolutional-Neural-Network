@@ -85,7 +85,6 @@ public class ConvolutionalLayer implements Layer {
         int inputDepth = lastInput.getDepth();
         int inputHeight = lastInput.getHeight();
         int inputWidth = lastInput.getWidth();
-        float[][][] gradInputData = gradOutput.getData();
 
         int numKernels = kernels.length;
         int kernelHeight = kernels[0].getWeights()[0].length;
@@ -94,11 +93,10 @@ public class ConvolutionalLayer implements Layer {
         int outputHeight = gradOutput.getHeight();
         int outputWidth = gradOutput.getWidth();
 
-        Tensor gradInput = new Tensor(inputDepth, inputHeight, inputWidth);
-
-        float[][][] gradOutData = gradOutput.getData();
+        float[][][] gradOutputData = gradOutput.getData();
         float[][][] lastInputData = lastInput.getData();
         float[][][] lastWeightedInputData = lastWeightedInput.getData();
+        float[][][] gradInputData = new float[inputDepth][inputHeight][inputWidth];
 
         for (int k = 0; k < numKernels; k++) {
             Kernel kernel = kernels[k];
@@ -107,7 +105,7 @@ public class ConvolutionalLayer implements Layer {
             for (int outY = 0; outY < outputHeight; outY++) {
                 for (int outX = 0; outX < outputWidth; outX++) {
                     float dActivation = (lastWeightedInputData[k][outY][outX] > 0) ? 1.0f : 0.0f;
-                    float delta = gradOutData[k][outY][outX] * dActivation;
+                    float delta = gradOutputData[k][outY][outX] * dActivation;
 
                     kernel.biasGradient += delta;
 
@@ -131,7 +129,7 @@ public class ConvolutionalLayer implements Layer {
             }
         }
 
-        return gradInput;
+        return new Tensor(gradInputData);
     }
 
     @Override
