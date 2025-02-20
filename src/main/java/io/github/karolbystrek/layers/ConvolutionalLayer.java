@@ -143,6 +143,18 @@ public class ConvolutionalLayer implements Layer {
         return Math.max(0.0f, input);
     }
 
+    public Kernel[] getKernels() {
+        return kernels;
+    }
+
+    public int getStride() {
+        return stride;
+    }
+
+    public int getPadding() {
+        return padding;
+    }
+
     private float[][][] padInputData(float[][][] inputData, int padding) {
         int depth = inputData.length;
         int inputHeight = inputData[0].length;

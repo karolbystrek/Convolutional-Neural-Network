@@ -123,4 +123,12 @@ public class OutputLayer implements Layer {
             biasesGradient[nodeOut] = 0.0f;
         }
     }
+
+    public float[][] getWeights() {
+        return weights;
+    }
+
+    public float[] getBiases() {
+        return biases;
+    }
 }

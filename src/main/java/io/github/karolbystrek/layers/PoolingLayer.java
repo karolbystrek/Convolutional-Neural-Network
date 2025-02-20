@@ -103,4 +103,12 @@ public class PoolingLayer implements Layer{
 
     @Override
     public void updateParameters(float learningRate) {}
+
+    public int getPoolSize() {
+        return poolSize;
+    }
+
+    public int getStride() {
+        return stride;
+    }
 }

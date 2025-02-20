@@ -52,4 +52,8 @@ public class Kernel {
     public float getBias() {
         return bias;
     }
+
+    public void setBias(float bias) {
+        this.bias = bias;
+    }
 }

@@ -1,6 +1,7 @@
 package io.github.karolbystrek.app;
 
 import io.github.karolbystrek.core.Tensor;
+import io.github.karolbystrek.io.NeuralNetworkFileIO;
 import io.github.karolbystrek.layers.ConvolutionalLayer;
 import io.github.karolbystrek.layers.FlattenLayer;
 import io.github.karolbystrek.layers.FullyConnectedLayer;
@@ -24,7 +25,7 @@ public class Cifar10App {
     };
     private static final String testFile = "data/cifar-10/test_batch.bin";
 
-    private static final int MAX_EPOCHS = 30;
+    private static final int MAX_EPOCHS = 50;
     private static final int BATCH_SIZE = 32;
     private static final float LEARNING_RATE = 0.001f;
 
@@ -49,6 +50,8 @@ public class Cifar10App {
             model.fit(trainingData, MAX_EPOCHS, BATCH_SIZE, LEARNING_RATE);
 
             evaluate(model, testData);
+
+            NeuralNetworkFileIO.saveNetwork(model, "data/networks/C16-3-3_P2-2_C16-32-3_P2-2_FC1024-512-10.txt");
 
         } catch (IOException e) {
             e.printStackTrace();

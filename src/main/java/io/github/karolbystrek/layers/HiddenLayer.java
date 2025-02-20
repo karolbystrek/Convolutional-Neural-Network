@@ -116,4 +116,12 @@ public class HiddenLayer implements Layer {
     private float activation(float weightedInput) {
         return Math.max(0.0f, weightedInput);
     }
+
+    public float[][] getWeights() {
+        return weights;
+    }
+
+    public float[] getBiases() {
+        return biases;
+    }
 }

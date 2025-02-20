@@ -11,6 +11,10 @@ import java.util.List;
 public class NeuralNetwork {
     private final List<Layer> layers = new ArrayList<>();
 
+    public List<Layer> getLayers() {
+        return layers;
+    }
+
     public void addLayer(Layer layer) {
         layers.add(layer);
     }
@@ -44,6 +48,7 @@ public class NeuralNetwork {
         int batchIndex = 0;
 
         for (DataPoint dataPoint : trainingData) {
+//            TODO: Run each batch in multiple threads (in a safe manner)
             Tensor output = forward(dataPoint.getInput());
             Tensor expectedOutput = dataPoint.getExpectedOutput();
 

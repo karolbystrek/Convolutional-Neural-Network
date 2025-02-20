@@ -4,13 +4,14 @@ import io.github.karolbystrek.core.Tensor;
 
 public class FullyConnectedLayer implements Layer {
 
+    private final int[] layerSizes;
     private final Layer[] layers;
 
     public FullyConnectedLayer(int[] layerSizes) {
         if (layerSizes == null || layerSizes.length < 2) {
             throw new IllegalArgumentException("Fully connected layer requires at least two layers");
         }
-
+        this.layerSizes = layerSizes;
         layers = new Layer[layerSizes.length - 1];
 
         int layerIndex = 0;
@@ -43,6 +44,14 @@ public class FullyConnectedLayer implements Layer {
         for (Layer layer : layers) {
             layer.updateParameters(learningRate);
         }
+    }
+
+    public int[] getLayerSizes() {
+        return layerSizes;
+    }
+
+    public Layer[] getLayers() {
+        return layers;
     }
 
 }
